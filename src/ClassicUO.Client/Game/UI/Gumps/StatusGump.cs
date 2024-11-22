@@ -1479,8 +1479,6 @@ namespace ClassicUO.Game.UI.Gumps
 
             base.Update();
         }
-
-
         private enum MobileStats
         {
             Name,

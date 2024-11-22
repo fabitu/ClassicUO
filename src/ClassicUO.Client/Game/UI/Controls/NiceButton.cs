@@ -60,7 +60,8 @@ namespace ClassicUO.Game.UI.Controls
         ) : base(x, y, w, h)
         {
             _action = action;
-
+            if (ButtonParameter == 0)
+                ButtonParameter = (int)action;
             Add
             (
                 TextLabel = new Label

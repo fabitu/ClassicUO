@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ClassicUO.Utility.Logging
 {
@@ -152,6 +153,10 @@ namespace ClassicUO.Utility.Logging
 
                     Console.WriteLine(text);
                 }
+                // Captura o call stack no ponto atual
+                //StackTrace stackTrace = new StackTrace(true); // O argumento 'true' inclui informações de fonte como o nome do arquivo e número da linha                               
+                //StackFrame previousFrame = stackTrace.GetFrame(stackTrace.FrameCount-1);
+                //Console.WriteLine(previousFrame.ToString());
             }
         }
     }

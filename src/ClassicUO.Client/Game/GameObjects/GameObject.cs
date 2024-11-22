@@ -40,6 +40,7 @@ using ClassicUO.Assets;
 using ClassicUO.Renderer;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
+using System.Xml.Linq;
 
 namespace ClassicUO.Game.GameObjects
 {
@@ -98,8 +99,15 @@ namespace ClassicUO.Game.GameObjects
         public abstract bool CheckMouseSelection();
 
         // FIXME: remove it
-        public sbyte FoliageIndex = -1;
-        public ushort Graphic;
+        public sbyte FoliageIndex = -1;   
+        public ushort Graphic
+        {
+            get { return _graphic; }
+            set { _graphic = value; }
+        }
+
+        private ushort _graphic;
+
         public ushort Hue;
         public Vector3 Offset;
         public short PriorityZ;

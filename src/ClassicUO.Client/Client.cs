@@ -60,12 +60,11 @@ namespace ClassicUO
         public Renderer.Sounds.Sound Sounds { get; private set; }
         public World World { get; private set; }
         public GameCursor GameCursor { get; private set; }
-
         public ClientVersion Version { get; private set; }
         public ClientFlags Protocol { get; set; }
         public string ClientPath { get; private set; }
         public UOFileManager FileManager { get; private set; }
-
+        public static UOFileManager StaticFileManager { get; private set; }
 
         public UltimaOnline()
         {
@@ -132,7 +131,6 @@ namespace ClassicUO
             FileManager.Dispose();
             World?.Map?.Destroy();
         }
-
 
         private void LoadUOFiles()
         {
@@ -213,19 +211,25 @@ namespace ClassicUO
                 Protocol |= ClientFlags.CF_SA;
             }
 
-            Log.Trace($"Client path: '{clientPath}'");
-            Log.Trace($"Client version: {clientVersion}");
+            Log.Trace($"Client path: '{Version}'");
+            Log.Trace($"Client version: {ClientPath}");
             Log.Trace($"Protocol: {Protocol}");
 
-            FileManager = new UOFileManager(clientVersion, clientPath);
+            FileManager = new UOFileManager(Version, ClientPath);
+            StaticFileManager = FileManager;
             FileManager.Load(Settings.GlobalSettings.UseVerdata, Settings.GlobalSettings.Language, Settings.GlobalSettings.MapsLayouts);
-            
-            StaticFilters.Load(FileManager.TileData);
+
+            LoadTileData();
             BuffTable.Load();
             ChairTable.Load();
 
             //ATTENTION: you will need to enable ALSO ultimalive server-side, or this code will have absolutely no effect!
             UltimaLive.Enable();
+        }
+
+        public void LoadTileData()
+        {
+            StaticFilters.Load(StaticFileManager.TileData);
         }
     }
 
@@ -251,6 +255,7 @@ namespace ClassicUO
                     Log.Trace("HIGH DPI - ENABLED");
                 }
 
+                Log.Trace("Run game...");
                 Game.Run();
             }
 

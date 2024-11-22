@@ -482,7 +482,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.Walk:
                     byte dt = (byte) Direction.Up;
 
@@ -502,12 +501,10 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.WarPeace:
                     GameActions.ToggleWarMode(_world.Player);
 
                     break;
-
                 case MacroType.Paste:
                     string txt = StringHelper.GetClipboardText(true);
 
@@ -517,7 +514,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.Open:
                 case MacroType.Close:
                 case MacroType.Minimize:
@@ -917,12 +913,10 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.OpenDoor:
                     GameActions.OpenDoor();
 
                     break;
-
                 case MacroType.UseSkill:
                     int skill = macro.SubCode - MacroSubType.Anatomy;
 
@@ -937,12 +931,10 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.LastSkill:
                     GameActions.UseSkill(GameActions.LastSkillIndex);
 
                     break;
-
                 case MacroType.CastSpell:
                     int spell = macro.SubCode - MacroSubType.Clumsy + 1;
 
@@ -982,12 +974,10 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.LastSpell:
                     GameActions.CastSpell(GameActions.LastSpellIndex);
 
                     break;
-
                 case MacroType.Bow:
                 case MacroType.Salute:
                     int index = macro.Code - MacroType.Bow;
@@ -998,17 +988,14 @@ namespace ClassicUO.Game.Managers
                     GameActions.EmoteAction(index == 0 ? BOW : SALUTE);
 
                     break;
-
                 case MacroType.QuitGame:
                     Client.Game.GetScene<GameScene>()?.RequestQuitGame();
 
                     break;
-
                 case MacroType.AllNames:
                     GameActions.AllNames(_world);
 
                     break;
-
                 case MacroType.LastObject:
 
                     if (_world.Get(_world.LastObject) != null)
@@ -1017,7 +1004,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.UseItemInHand:
                     Item itemInLeftHand = _world.Player.FindItemByLayer(Layer.OneHanded);
 
@@ -1036,7 +1022,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.LastTarget:
 
                     //if (WaitForTargetTimer == 0)
@@ -1075,7 +1060,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.TargetSelf:
 
                     //if (WaitForTargetTimer == 0)
@@ -1096,7 +1080,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.ArmDisarm:
                     int handIndex = 1 - (macro.SubCode - MacroSubType.LeftHand);
                     GameScene gs = Client.Game.GetScene<GameScene>();
@@ -1145,7 +1128,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.WaitForTarget:
 
                     if (WaitForTargetTimer == 0)
@@ -1163,7 +1145,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.TargetNext:
 
                     uint sel_obj = _world.FindNext(ScanTypeObject.Mobiles, _world.TargetManager.LastTargetInfo.Serial, false);
@@ -1175,7 +1156,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.AttackLast:
                     if (_world.TargetManager.LastTargetInfo.IsEntity)
                     {
@@ -1183,7 +1163,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.Delay:
                     MacroObjectString mosss = (MacroObjectString) macro;
                     string str = mosss.Text;
@@ -1194,45 +1173,37 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.CircleTrans:
                     ProfileManager.CurrentProfile.UseCircleOfTransparency = !ProfileManager.CurrentProfile.UseCircleOfTransparency;
 
                     break;
-
                 case MacroType.CloseGump:
 
                     UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is WorldViewportGump)).ToList().ForEach(s => s.Dispose());
 
                     break;
-
                 case MacroType.AlwaysRun:
                     ProfileManager.CurrentProfile.AlwaysRun = !ProfileManager.CurrentProfile.AlwaysRun;
 
                     GameActions.Print(_world, ProfileManager.CurrentProfile.AlwaysRun ? ResGeneral.AlwaysRunIsNowOn : ResGeneral.AlwaysRunIsNowOff);
 
                     break;
-
                 case MacroType.SaveDesktop:
                     ProfileManager.CurrentProfile?.Save(_world, ProfileManager.ProfilePath);
 
                     break;
-
                 case MacroType.EnableRangeColor:
                     ProfileManager.CurrentProfile.NoColorObjectsOutOfRange = true;
 
                     break;
-
                 case MacroType.DisableRangeColor:
                     ProfileManager.CurrentProfile.NoColorObjectsOutOfRange = false;
 
                     break;
-
                 case MacroType.ToggleRangeColor:
                     ProfileManager.CurrentProfile.NoColorObjectsOutOfRange = !ProfileManager.CurrentProfile.NoColorObjectsOutOfRange;
 
                     break;
-
                 case MacroType.AttackSelectedTarget:
 
                     if (SerialHelper.IsMobile(_world.TargetManager.SelectedTarget))
@@ -1241,7 +1212,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.UseSelectedTarget:
                     if (SerialHelper.IsValid(_world.TargetManager.SelectedTarget))
                     {
@@ -1249,7 +1219,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.CurrentTarget:
 
                     if (_world.TargetManager.SelectedTarget != 0)
@@ -1275,13 +1244,11 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.TargetSystemOnOff:
 
                     GameActions.Print(_world, ResGeneral.TargetSystemNotImplemented);
 
                     break;
-
                 case MacroType.BandageSelf:
                 case MacroType.BandageTarget:
 
@@ -1348,7 +1315,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.SetUpdateRange:
                 case MacroType.ModifyUpdateRange:
 
@@ -1369,7 +1335,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.IncreaseUpdateRange:
                     _world.ClientViewRange++;
 
@@ -1381,7 +1346,6 @@ namespace ClassicUO.Game.Managers
                     GameActions.Print(_world, string.Format(ResGeneral.ClientViewRangeIsNow0, _world.ClientViewRange));
 
                     break;
-
                 case MacroType.DecreaseUpdateRange:
                     _world.ClientViewRange--;
 
@@ -1393,25 +1357,21 @@ namespace ClassicUO.Game.Managers
                     GameActions.Print(_world, string.Format(ResGeneral.ClientViewRangeIsNow0, _world.ClientViewRange));
 
                     break;
-
                 case MacroType.MaxUpdateRange:
                     _world.ClientViewRange = Constants.MAX_VIEW_RANGE;
                     GameActions.Print(_world, string.Format(ResGeneral.ClientViewRangeIsNow0, _world.ClientViewRange));
 
                     break;
-
                 case MacroType.MinUpdateRange:
                     _world.ClientViewRange = Constants.MIN_VIEW_RANGE;
                     GameActions.Print(_world, string.Format(ResGeneral.ClientViewRangeIsNow0, _world.ClientViewRange));
 
                     break;
-
                 case MacroType.DefaultUpdateRange:
                     _world.ClientViewRange = Constants.MAX_VIEW_RANGE;
                     GameActions.Print(_world, string.Format(ResGeneral.ClientViewRangeIsNow0, _world.ClientViewRange));
 
                     break;
-
                 case MacroType.SelectNext:
                 case MacroType.SelectPrevious:
                 case MacroType.SelectNearest:
@@ -1439,7 +1399,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.ToggleBuffIconGump:
                     BuffGump buff = UIManager.GetGump<BuffGump>();
 
@@ -1453,23 +1412,19 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.InvokeVirtue:
                     byte id = (byte) (macro.SubCode - MacroSubType.Honor + 1);
                     NetClient.Socket.Send_InvokeVirtueRequest(id);
 
                     break;
-
                 case MacroType.PrimaryAbility:
                     GameActions.UsePrimaryAbility(_world);
 
                     break;
-
                 case MacroType.SecondaryAbility:
                     GameActions.UseSecondaryAbility(_world);
 
                     break;
-
                 case MacroType.ToggleGargoyleFly:
 
                     if (_world.Player.Race == RaceType.GARGOYLE)
@@ -1478,16 +1433,13 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.EquipLastWeapon:
                     NetClient.Socket.Send_EquipLastWeapon(_world);
 
                     break;
-
                 case MacroType.KillGumpOpen:
                     // TODO:
                     break;
-
                 case MacroType.Zoom:
 
                     switch (macro.SubCode)
@@ -1510,38 +1462,31 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.ToggleChatVisibility:
                     UIManager.SystemChat?.ToggleChatVisibility();
 
                     break;
-
                 case MacroType.Aura:
                     // hold to draw
                     break;
-
                 case MacroType.AuraOnOff:
                     _world.AuraManager.ToggleVisibility();
 
                     break;
-
                 case MacroType.Grab:
                     GameActions.Print(_world, ResGeneral.TargetAnItemToGrabIt);
                     _world.TargetManager.SetTargeting(CursorTarget.Grab, 0, TargetType.Neutral);
 
                     break;
-
                 case MacroType.SetGrabBag:
                     GameActions.Print(_world, ResGumps.TargetContainerToGrabItemsInto);
                     _world.TargetManager.SetTargeting(CursorTarget.SetGrabBag, 0, TargetType.Neutral);
 
                     break;
-
                 case MacroType.NamesOnOff:
                     _world.NameOverHeadManager.ToggleOverheads();
 
                     break;
-
                 case MacroType.UsePotion:
                     scantype = (ScanTypeObject)(macro.SubCode - MacroSubType.ConfusionBlastPotion);
 
@@ -1555,7 +1500,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.UseObject:
                     Item obj;
 
@@ -1719,7 +1663,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.CloseAllHealthBars:
 
                     //Includes HealthBarGump/HealthBarGumpCustom
@@ -1734,7 +1677,6 @@ namespace ClassicUO.Game.Managers
                     }
 
                     break;
-
                 case MacroType.CloseInactiveHealthBars:
                     IEnumerable<BaseHealthBarGump> inactiveHealthBarGumps = UIManager.Gumps.OfType<BaseHealthBarGump>().Where(hb => hb.IsInactive);
 
@@ -1750,7 +1692,6 @@ namespace ClassicUO.Game.Managers
                         healthbar.Dispose();
                     }
                     break;
-
                 case MacroType.CloseCorpses:
                     var gridLootType = ProfileManager.CurrentProfile?.GridLootType; // 0 = none, 1 = only grid, 2 = both
                     if (gridLootType == 0 || gridLootType == 2)
@@ -1772,29 +1713,21 @@ namespace ClassicUO.Game.Managers
                         }
                     }
                     break;
-
                 case MacroType.ToggleDrawRoofs:
                     ProfileManager.CurrentProfile.DrawRoofs = !ProfileManager.CurrentProfile.DrawRoofs;
-
                     break;
-
-                case MacroType.ToggleTreeStumps:
-                    StaticFilters.CleanTreeTextures();
+                case MacroType.ToggleTreeStumps:               
                     ProfileManager.CurrentProfile.TreeToStumps = !ProfileManager.CurrentProfile.TreeToStumps;
 
                     break;
-
                 case MacroType.ToggleVegetation:
                     ProfileManager.CurrentProfile.HideVegetation = !ProfileManager.CurrentProfile.HideVegetation;
 
                     break;
-
-                case MacroType.ToggleCaveTiles:
-                    StaticFilters.CleanCaveTextures();
+                case MacroType.ToggleCaveTiles:                    
                     ProfileManager.CurrentProfile.EnableCaveBorder = !ProfileManager.CurrentProfile.EnableCaveBorder;
 
                     break;
-
                 case MacroType.LookAtMouse:
                     // handle in gamesceneinput
                     break;
@@ -1839,8 +1772,6 @@ namespace ClassicUO.Game.Managers
             GameActions.Print(_world, ResGeneral.EntityNotFound);
         }
     }
-
-
     internal class Macro : LinkedObject, IEquatable<Macro>
     {
         public Macro(string name, SDL.SDL_Keycode key, bool alt, bool ctrl, bool shift) : this(name)
@@ -2120,31 +2051,26 @@ namespace ClassicUO.Game.Managers
                     count = MacroSubType.Anatomy - MacroSubType.Configuration;
 
                     break;
-
                 case MacroType.UseSkill:
                     offset = (int) MacroSubType.Anatomy;
                     count = MacroSubType.LeftHand - MacroSubType.Anatomy;
 
                     break;
-
                 case MacroType.ArmDisarm:
                     offset = (int) MacroSubType.LeftHand;
                     count = MacroSubType.Honor - MacroSubType.LeftHand;
 
                     break;
-
                 case MacroType.InvokeVirtue:
                     offset = (int) MacroSubType.Honor;
                     count = MacroSubType.Clumsy - MacroSubType.Honor;
 
                     break;
-
                 case MacroType.CastSpell:
                     offset = (int) MacroSubType.Clumsy;
                     count = MacroSubType.Hostile - MacroSubType.Clumsy;
 
                     break;
-
                 case MacroType.SelectNext:
                 case MacroType.SelectPrevious:
                 case MacroType.SelectNearest:
@@ -2152,25 +2078,21 @@ namespace ClassicUO.Game.Managers
                     count = MacroSubType.MscTotalCount - MacroSubType.Hostile;
 
                     break;
-
                 case MacroType.UsePotion:
                     offset = (int) MacroSubType.ConfusionBlastPotion;
                     count = MacroSubType.DefaultZoom - MacroSubType.ConfusionBlastPotion;
 
                     break;
-
                 case MacroType.Zoom:
                     offset = (int) MacroSubType.DefaultZoom;
                     count = 1 + MacroSubType.ZoomOut - MacroSubType.DefaultZoom;
 
                     break;
-
                 case MacroType.UseObject:
                     offset = (int) MacroSubType.BestHealPotion;
                     count = 1 + MacroSubType.SpellStone - MacroSubType.BestHealPotion;
 
                     break;
-
                 case MacroType.LookAtMouse:
                     offset = (int) MacroSubType.LookForwards;
                     count = 1 + MacroSubType.LookBackwards - MacroSubType.LookForwards;
@@ -2179,8 +2101,6 @@ namespace ClassicUO.Game.Managers
             }
         }
     }
-
-
     internal class MacroObject : LinkedObject
     {
         public MacroObject(MacroType code, MacroSubType sub)
@@ -2218,7 +2138,6 @@ namespace ClassicUO.Game.Managers
                     SubMenuType = 1;
 
                     break;
-
                 case MacroType.Say:
                 case MacroType.Emote:
                 case MacroType.Whisper:
@@ -2237,32 +2156,26 @@ namespace ClassicUO.Game.Managers
                     break;
             }
         }
-
         public MacroType Code { get; set; }
         public MacroSubType SubCode { get; set; }
         public sbyte SubMenuType { get; set; }
-
         public virtual bool HasString()
         {
             return false;
         }
     }
-
     internal class MacroObjectString : MacroObject
     {
         public MacroObjectString(MacroType code, MacroSubType sub, string str = "") : base(code, sub)
         {
             Text = str;
         }
-
         public string Text { get; set; }
-
         public override bool HasString()
         {
             return true;
         }
     }
-
     internal enum MacroType
     {
         None = 0,
@@ -2345,7 +2258,6 @@ namespace ClassicUO.Game.Managers
         UseObject,
         LookAtMouse
     }
-
     internal enum MacroSubType
     {
         MSC_NONE = 0,

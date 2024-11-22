@@ -1,49 +1,24 @@
-#region license
-
-// Copyright (c) 2024, andreakarasho
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 1. Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-// 2. Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in the
-//    documentation and/or other materials provided with the distribution.
-// 3. All advertising materials mentioning features or use of this software
-//    must display the following acknowledgement:
-//    This product includes software developed by andreakarasho - https://github.com/andreakarasho
-// 4. Neither the name of the copyright holder nor the
-//    names of its contributors may be used to endorse or promote products
-//    derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
-// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-#endregion
-
-using System;
-using System.Linq;
+using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+using ClassicUO.Game.Data.PreferencesJson;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
+using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Input;
-using ClassicUO.Assets;
 using ClassicUO.Network;
+using ClassicUO.Renderer.Gumps;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using SDL2;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Text;
 using MathHelper = ClassicUO.Utility.MathHelper;
 
 namespace ClassicUO.Game.Scenes
@@ -64,6 +39,7 @@ namespace ClassicUO.Game.Scenes
             _continueRunning;
         private Point _selectionStart,
             _selectionEnd;
+        public ContextMenuControl ContextMenu { get; set; }
         private int AnchorOffset => ProfileManager.CurrentProfile.DragSelectAsAnchor ? 0 : 2;
 
         private bool MoveCharacterByMouseInput()
@@ -350,6 +326,7 @@ namespace ClassicUO.Game.Scenes
             return false;
         }
 
+        //EP: ItemClick
         private bool OnLeftMouseDown()
         {
             if (
@@ -363,6 +340,18 @@ namespace ClassicUO.Game.Scenes
             if (!UIManager.IsMouseOverWorld)
             {
                 return false;
+            }
+
+            //EP: Call Preference Manager
+            if (Keyboard.Ctrl && Keyboard.Alt)
+            {
+                ushort? graphic = null;
+                if (SelectedObject.Object is GameObject gameObject)
+                {
+                    graphic = gameObject.Graphic;
+                }
+
+                OpenFakeGump(SelectedObject.Object);
             }
 
             if (_world.CustomHouseManager != null)
@@ -399,12 +388,62 @@ namespace ClassicUO.Game.Scenes
                 }
                 else
                 {
+                    GetInfo();
+
                     _isMouseLeftDown = true;
                     _holdMouse2secOverItemTime = Time.Ticks;
                 }
             }
 
             return true;
+        }
+
+        public string GetInfo()
+        {
+            StringBuilder sb = new();
+
+            try
+            {
+                if (SelectedObject.Object is GameObject gameObject)
+                {
+                    ref StaticTiles itemdata = ref Client.Game.UO.FileManager.TileData.StaticData[gameObject.Graphic];
+                    sb.Append($" Graphic: 0x0{gameObject.Graphic.ToString("X")}");
+                }
+
+                if (SelectedObject.Object is Land land)
+                {
+                    sb.Append($" Name: {land.TileData.Name}");
+                }
+                else if (SelectedObject.Object is Static stat)
+                {
+                    sb.Append($" Name: {stat.Name} X:{stat.X} Y:{stat.Y} Z:{stat.Z} ");
+                }
+                else if (SelectedObject.Object is Item item)
+                {
+                    sb.Append($" Name: {item.ItemData.Name} Flags: {item.ItemData.Flags}");
+                }
+                else if (SelectedObject.Object is Mobile mobile)
+                {
+                    if (SelectedObject.Object is PlayerMobile playerMobile)
+                    {
+                        sb.Append($" Name: {playerMobile.Name} str{playerMobile.Strength} luck{playerMobile.Luck} {playerMobile.Hits}/{playerMobile.HitsMax}");
+                    }
+                    else
+                    {
+                        sb.Append($" Name: {mobile.Name} {mobile.Hits}/{mobile.HitsMax}");
+                    }
+                }
+                else
+                {
+                    sb.Append($" Type: {SelectedObject.Object.GetType().Name}");
+                }
+            }
+            catch
+            {                //no-op
+            }
+
+
+            return sb.ToString();
         }
 
         private bool OnLeftMouseUp()
@@ -1243,7 +1282,6 @@ namespace ClassicUO.Game.Scenes
                     }
 
                     break;
-
                 case SDL.SDL_Keycode.SDLK_RETURN:
                 case SDL.SDL_Keycode.SDLK_KP_ENTER:
 
@@ -1270,11 +1308,9 @@ namespace ClassicUO.Game.Scenes
                     break;
             }
 
-            if (
-                UIManager.KeyboardFocusControl == UIManager.SystemChat.TextBoxControl
-                && UIManager.SystemChat.IsActive
-                && ProfileManager.CurrentProfile.ActivateChatAfterEnter
-            )
+            if (UIManager.KeyboardFocusControl == UIManager.SystemChat.TextBoxControl &&
+                UIManager.SystemChat.IsActive &&
+                ProfileManager.CurrentProfile.ActivateChatAfterEnter)
             {
                 return;
             }
@@ -1366,29 +1402,21 @@ namespace ClassicUO.Game.Scenes
                         {
                             case SDL.SDL_Keycode.SDLK_UP:
                                 _flags[0] = true;
-
                                 break;
-
                             case SDL.SDL_Keycode.SDLK_LEFT:
                                 _flags[1] = true;
-
                                 break;
-
                             case SDL.SDL_Keycode.SDLK_DOWN:
                                 _flags[2] = true;
-
                                 break;
-
                             case SDL.SDL_Keycode.SDLK_RIGHT:
                                 _flags[3] = true;
-
                                 break;
                         }
                     }
                 }
             }
         }
-
         internal override void OnKeyUp(SDL.SDL_KeyboardEvent e)
         {
             if (!_world.InGame)
@@ -1499,22 +1527,15 @@ namespace ClassicUO.Game.Scenes
             {
                 case SDL.SDL_Keycode.SDLK_UP:
                     _flags[0] = false;
-
                     break;
-
                 case SDL.SDL_Keycode.SDLK_LEFT:
                     _flags[1] = false;
-
                     break;
-
                 case SDL.SDL_Keycode.SDLK_DOWN:
                     _flags[2] = false;
-
                     break;
-
                 case SDL.SDL_Keycode.SDLK_RIGHT:
                     _flags[3] = false;
-
                     break;
             }
 
@@ -1537,13 +1558,11 @@ namespace ClassicUO.Game.Scenes
                 }
             }
         }
-
         private bool CanExecuteMacro()
         {
             return UIManager.KeyboardFocusControl == UIManager.SystemChat.TextBoxControl
                 && UIManager.SystemChat.Mode >= ChatMode.Default;
         }
-
         private void ExecuteMacro(MacroObject macro)
         {
             _world.Macros.SetMacroToExecute(macro);
@@ -1551,5 +1570,37 @@ namespace ClassicUO.Game.Scenes
             _world.Macros.WaitForTargetTimer = 0;
             _world.Macros.Update();
         }
+
+        private void OpenFakeGump(BaseGameObject seletedObject)
+        {
+            FakeGump fakeGump = UIManager.GetGump<FakeGump>();
+
+            if (fakeGump == null)
+            {
+                if (seletedObject != null)
+                {
+                    fakeGump = new FakeGump(_world, seletedObject)
+                    {
+                        X = Mouse.Position.X,
+                        Y = Mouse.Position.Y,
+                    };
+                }
+                else
+                {
+                    fakeGump = new FakeGump(_world)
+                    {
+                        X = Mouse.Position.X,
+                        Y = Mouse.Position.Y,
+                    };
+                }
+                UIManager.Add(fakeGump);                
+            }
+            else
+            {
+                UIManager.Gumps.Remove(fakeGump);
+                fakeGump.Dispose();
+                OpenFakeGump(seletedObject);
+            }
+        }            
     }
 }

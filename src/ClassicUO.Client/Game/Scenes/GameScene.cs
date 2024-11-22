@@ -339,10 +339,7 @@ namespace ClassicUO.Game.Scenes
             _world.Macros.Save();
             _world.Macros.Clear();
             _world.InfoBars.Save();
-            ProfileManager.UnLoadProfile();
-
-            StaticFilters.CleanCaveTextures();
-            StaticFilters.CleanTreeTextures();
+            ProfileManager.UnLoadProfile();          
 
             NetClient.Socket.Disconnected -= SocketOnDisconnected;
             NetClient.Socket.Disconnect();
@@ -606,7 +603,7 @@ namespace ClassicUO.Game.Scenes
 
             GetViewPort();
 
-            var useObjectHandles = _world.NameOverHeadManager.IsToggled || Keyboard.Ctrl && Keyboard.Shift;
+            var useObjectHandles = _world.NameOverHeadManager.IsToggled || (Keyboard.Ctrl && Keyboard.Shift && !Keyboard.Alt);
             if (useObjectHandles != _useObjectHandles)
             {
                 _useObjectHandles = useObjectHandles;

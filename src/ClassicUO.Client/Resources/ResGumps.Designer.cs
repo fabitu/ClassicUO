@@ -4337,6 +4337,15 @@ namespace ClassicUO.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change Wall and Doors.
+        /// </summary>
+        public static string WallToSmall {
+            get {
+                return ResourceManager.GetString("WallToSmall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Weapon Damage Increase.
         /// </summary>
         public static string WeaponDamageIncrease {

@@ -40,17 +40,6 @@ namespace ClassicUO.Game.GameObjects
 {
     internal sealed partial class Static : GameObject
     {
-        //private static readonly QueuedPool<Static> _pool = new QueuedPool<Static>
-        //(
-        //    Constants.PREDICTABLE_STATICS,
-        //    s =>
-        //    {
-        //        s.IsDestroyed = false;
-        //        s.AlphaHue = 0;
-        //        s.FoliageIndex = 0;
-        //    }
-        //);
-
         public Static(World world) : base(world) { }
 
         public string Name => ItemData.Name;
@@ -69,7 +58,7 @@ namespace ClassicUO.Game.GameObjects
 
         public static Static Create(World world, ushort graphic, ushort hue, int index)
         {
-            Static s = new Static(world); // _pool.GetOne();
+            Static s = new Static(world);
             s.Graphic = s.OriginalGraphic = graphic;
             s.Hue = hue;
             s.UpdateGraphicBySeason();

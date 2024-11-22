@@ -33,10 +33,10 @@
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.Scenes;
-using ClassicUO.IO;
-using ClassicUO.Assets;
+using ClassicUO.Input;
 using ClassicUO.Renderer;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace ClassicUO.Game.GameObjects
 {
@@ -91,13 +91,8 @@ namespace ClassicUO.Game.GameObjects
             }
 
             Vector3 hueVec = ShaderHueTranslator.GetHueVector(hue, partial, AlphaHue / 255f);
-
-            bool isTree = StaticFilters.IsTree(graphic, out _);
-
-            if (isTree && ProfileManager.CurrentProfile.TreeToStumps)
-            {
-                graphic = Constants.TREE_REPLACE_GRAPHIC;
-            }
+            bool isTree = ReplaceTree(ref graphic);
+            ReplaceWall(ref graphic);
 
             DrawStaticAnimated(
                 batcher,
@@ -120,6 +115,49 @@ namespace ClassicUO.Game.GameObjects
             return true;
         }
 
+        //EP: ReplaceDoor
+        private static void ReplaceDoor(ref ushort graphic)
+        {
+            if (ProfileManager.CurrentProfile.ChangeWallAndDoors && !(Keyboard.Ctrl && Keyboard.Alt && Keyboard.Shift))
+            {
+                var _graphic = graphic;
+                var replaceGraphic = Constants.WALL_REPLACE_GRAPHIC;
+                var customReplaceWall = StaticFilters.WallTiles.FirstOrDefault(x => x.ToReplaceGraphicArray.Contains(_graphic));
+                if (customReplaceWall != null)
+                    replaceGraphic = customReplaceWall.ReplaceToGraphic;
+
+                graphic = replaceGraphic;
+            }
+        }
+
+        //EP: ReplaceWall
+        private static void ReplaceWall(ref ushort graphic)
+        {           
+            if (ProfileManager.CurrentProfile.ChangeWallAndDoors && !(Keyboard.Ctrl && Keyboard.Alt && Keyboard.Shift))
+            {
+                var _graphic = graphic;                
+                var customReplaceWall = StaticFilters.WallTiles.FirstOrDefault(x => x.ToReplaceGraphicArray.Contains(_graphic));
+                if (customReplaceWall != null)
+                    graphic = customReplaceWall.ReplaceToGraphic;                
+            }
+        }
+
+        //EP: ReplaceTree
+        private static bool ReplaceTree(ref ushort graphic)
+        {
+            bool isTree = StaticFilters.IsTree(graphic, out int treeType);
+
+            if (isTree && ProfileManager.CurrentProfile.TreeToStumps && !(Keyboard.Ctrl && Keyboard.Alt && Keyboard.Shift))
+            {
+                if (treeType == 0)
+                    graphic = Constants.TREE_STUMPED_REPLACE_GRAPHIC;
+                else
+                    graphic = Constants.TREE_REPLACE_GRAPHIC;
+            }
+
+            return isTree;
+        }
+
         public override bool CheckMouseSelection()
         {
             if (
@@ -132,12 +170,7 @@ namespace ClassicUO.Game.GameObjects
             {
                 ushort graphic = Graphic;
 
-                bool isTree = StaticFilters.IsTree(graphic, out _);
-
-                if (isTree && ProfileManager.CurrentProfile.TreeToStumps)
-                {
-                    graphic = Constants.TREE_REPLACE_GRAPHIC;
-                }
+                ReplaceTree(ref graphic);
 
                 ref var index = ref Client.Game.UO.FileManager.Arts.File.GetValidRefEntry(graphic + 0x4000);
 

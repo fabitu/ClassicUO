@@ -33,22 +33,8 @@ namespace ClassicUO.Game.UI.Gumps
         public IgnoreManagerGump(World world) : base(world, 0, 0)
         {
             CanMove = true;
-
-            Add
-            (
-                new AlphaBlendControl(0.95f)
-                {
-                    X = _gumpPosX,
-                    Y = _gumpPosY,
-                    Width = GUMP_WIDTH,
-                    Height = GUMP_HEIGHT,
-                    Hue = BACKGROUND_COLOR,
-                    AcceptMouseInput = true,
-                    CanMove = true,
-                    CanCloseWithRightClick = true,
-                }
-            );
-
+            //BackGround
+            Add(new AlphaBlendControl(0.95f) { X = _gumpPosX, Y = _gumpPosY, Width = GUMP_WIDTH, Height = GUMP_HEIGHT, Hue = BACKGROUND_COLOR, AcceptMouseInput = true, CanMove = true, CanCloseWithRightClick = true, });
             #region Boarder
             Add
             (

@@ -1591,4 +1591,8 @@ Client version: '{0}'</value>
   <data name="NewTargetSystem" xml:space="preserve">
     <value>Use new target system</value>
   </data>
+  <data name="WallToSmall" xml:space="preserve">
+    <value>Change Wall and Doors</value>
+    <comment>>Change Wall and Doors</comment>
+  </data>
 </root>

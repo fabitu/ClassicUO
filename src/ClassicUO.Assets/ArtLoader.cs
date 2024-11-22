@@ -121,7 +121,7 @@ namespace ClassicUO.Assets
                     data[pos++] = HuesHelper.Color16To32(file.ReadUInt16()) | 0xFF_00_00_00;
                 }
             }
-
+            //AddBlackBorder(data, width, height);
             return data;
         }
 
@@ -191,11 +191,11 @@ namespace ClassicUO.Assets
                         ptr = (ushort*)(datastart + lineoffsets[y] * 2);
                     }
                 }
-            }
-
+            }           
+            //AddBlackBorder(data, width,height);
             return data;
         }
-
+        //EP:BLACKBORDER
         private static void AddBlackBorder(Span<uint> pixels, int width, int height)
         {
             for (int yy = 0; yy < height; yy++)

@@ -1,44 +1,19 @@
-﻿#region license
+﻿
 
-// Copyright (c) 2024, andreakarasho
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 1. Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-// 2. Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in the
-//    documentation and/or other materials provided with the distribution.
-// 3. All advertising materials mentioning features or use of this software
-//    must display the following acknowledgement:
-//    This product includes software developed by andreakarasho - https://github.com/andreakarasho
-// 4. Neither the name of the copyright holder nor the
-//    names of its contributors may be used to endorse or promote products
-//    derived from this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
-// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-#endregion
-
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Controls;
+using ClassicUO.Input;
 using ClassicUO.Renderer;
+using ClassicUO.Utility.Logging;
 using Microsoft.Xna.Framework;
 
 namespace ClassicUO.Game.UI.Gumps
@@ -88,38 +63,11 @@ namespace ClassicUO.Game.UI.Gumps
         public override void Save(XmlTextWriter writer)
         {
             base.Save(writer);
-            //writer.WriteStartElement("controls");
-
-            //foreach (InfoBarControl co in _infobarControls)
-            //{
-            //    writer.WriteStartElement("control");
-            //    writer.WriteAttributeString("label", co.Text);
-            //    writer.WriteAttributeString("var", ((int) co.Var).ToString());
-            //    writer.WriteAttributeString("hue", co.Hue.ToString());
-            //    writer.WriteEndElement();
-            //}
-            //writer.WriteEndElement();
         }
 
         public override void Restore(XmlElement xml)
         {
             base.Restore(xml);
-
-            //XmlElement controlsXml = xml["controls"];
-            //_infobarControls.Clear();
-
-            //if (controlsXml != null)
-            //{
-            //    foreach (XmlElement controlXml in controlsXml.GetElementsByTagName("control"))
-            //    {
-            //        InfoBarControl control = new InfoBarControl(controlXml.GetAttribute("label"),
-            //                                                    (InfoBarVars) int.Parse(controlXml.GetAttribute("var")),
-            //                                                    ushort.Parse(controlXml.GetAttribute("hue")));
-
-            //        Add(control);
-            //        _infobarControls.Add(control);
-            //    }
-            //}
         }
 
         public override void Update()
@@ -307,8 +255,60 @@ namespace ClassicUO.Game.UI.Gumps
 
                 case InfoBarVars.TithingPoints: return _gump.World.Player.TithingPoints.ToString();
 
+                //EP: Custom Item
+                case InfoBarVars.CustomItem:
+                    {
+                        if (SelectedObject.Object != null)
+                            return GetInfo();
+                        return "";
+                    }
+
                 default: return "";
             }
+        }
+
+        public string GetInfo()
+        {
+            StringBuilder sb = new();
+            try
+            {
+                sb.Append($" CX:{Mouse.Position.X} CY:{Mouse.Position.Y}");
+                sb.Append($" PX:{_gump.World.Player.X} PY:{_gump.World.Player.Y} PZ:{_gump.World.Player.Z}");
+                sb.Append($" Type: {SelectedObject.Object.GetType().Name}");
+
+                if (SelectedObject.Object is GameObject gameObject)
+                {
+                    sb.Append($" Graphic: 0x0{gameObject.Graphic.ToString("X")}/{gameObject.Graphic.ToString()} ");
+                    sb.Append($" X:{gameObject.X} Y:{gameObject.Y} Z:{gameObject.Z} ");
+                }
+
+                if (SelectedObject.Object is Land land)
+                {
+                    sb.Append($" Name: {land.TileData.Name} Flags: {land.TileData.Flags}");
+                }
+                else if (SelectedObject.Object is Static stat)
+                {
+                    sb.Append($" Name: {stat.Name}  Flags: {stat.ItemData.Flags}");
+                }
+                else if (SelectedObject.Object is Item item)
+                {
+                    sb.Append($" Name: {item.ItemData.Name} Flags: {item.ItemData.Flags}");
+                }
+                else if (SelectedObject.Object is Mobile mobile)
+                {
+                    if (SelectedObject.Object is PlayerMobile playerMobile)
+                    {
+                        sb.Append($" Name: {playerMobile.Name} str{playerMobile.Strength} luck{playerMobile.Luck} {playerMobile.Hits}/{playerMobile.HitsMax}");
+                    }
+                    else
+                    {
+                        sb.Append($" Name: {mobile.Name} {mobile.Hits}/{mobile.HitsMax}");
+                    }
+                }
+            }
+            catch { }
+
+            return sb.ToString();
         }
 
         private ushort GetVarHue(InfoBarVars var)
@@ -318,88 +318,45 @@ namespace ClassicUO.Game.UI.Gumps
             switch (var)
             {
                 case InfoBarVars.HP:
-                    percent = _gump.World.Player.Hits / (float) _gump.World.Player.HitsMax;
-
-                    if (percent <= 0.25)
-                    {
-                        return 0x0021;
-                    }
-                    else if (percent <= 0.5)
-                    {
-                        return 0x0030;
-                    }
-                    else if (percent <= 0.75)
-                    {
-                        return 0x0035;
-                    }
-                    else
-                    {
-                        return 0x0481;
-                    }
-
+                    percent = _gump.World.Player.Hits / (float)_gump.World.Player.HitsMax;
+                    return SetColors(percent);
                 case InfoBarVars.Mana:
-                    percent = _gump.World.Player.Mana / (float) _gump.World.Player.ManaMax;
-
-                    if (percent <= 0.25)
-                    {
-                        return 0x0021;
-                    }
-                    else if (percent <= 0.5)
-                    {
-                        return 0x0030;
-                    }
-                    else if (percent <= 0.75)
-                    {
-                        return 0x0035;
-                    }
-                    else
-                    {
-                        return 0x0481;
-                    }
-
+                    percent = _gump.World.Player.Mana / (float)_gump.World.Player.ManaMax;
+                    return SetColors(percent);
                 case InfoBarVars.Stamina:
                     percent = _gump.World.Player.Stamina / (float)_gump.World.Player.StaminaMax;
-
-                    if (percent <= 0.25)
-                    {
-                        return 0x0021;
-                    }
-                    else if (percent <= 0.5)
-                    {
-                        return 0x0030;
-                    }
-                    else if (percent <= 0.75)
-                    {
-                        return 0x0035;
-                    }
-                    else
-                    {
-                        return 0x0481;
-                    }
-
+                    return SetColors(percent);
                 case InfoBarVars.Weight:
                     percent = _gump.World.Player.Weight / (float)_gump.World.Player.WeightMax;
-
-                    if (percent >= 1)
-                    {
-                        return 0x0021;
-                    }
-                    else if (percent >= 0.75)
-                    {
-                        return 0x0030;
-                    }
-                    else if (percent >= 0.5)
-                    {
-                        return 0x0035;
-                    }
-                    else
-                    {
-                        return 0x0481;
-                    }
-
+                    return SetColors(percent);
                 case InfoBarVars.NameNotoriety: return Notoriety.GetHue(_gump.World.Player.NotorietyFlag);
+                case InfoBarVars.CustomItem: return 0x0035;
 
                 default: return 0x0481;
+            }
+        }
+
+        private static ushort SetColors(float percent)
+        {
+            ushort defaultHue = 0x0481;
+            ushort redHue = 0x0021;
+            ushort orangeHue = 0x0030;
+            ushort greenHue = 0x0035;
+            if (percent <= 0.25)
+            {
+                return redHue;
+            }
+            else if (percent <= 0.5)
+            {
+                return orangeHue;
+            }
+            else if (percent <= 0.75)
+            {
+                return greenHue;
+            }
+            else
+            {
+                return defaultHue;
             }
         }
     }

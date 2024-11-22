@@ -33,8 +33,10 @@
 using System.Collections.Generic;
 using ClassicUO.Assets;
 using ClassicUO.Renderer;
+using ClassicUO.Renderer.Lights;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ClassicUO.Game.UI.Controls
 {
@@ -48,6 +50,12 @@ namespace ClassicUO.Game.UI.Controls
             Graphic = graphic;
             CanMove = true;
             WantUpdateSize = false;
+        }
+
+        public StaticPic(ushort graphic, ushort hue, int width, int height) : this(graphic, hue)
+        {
+            Width = width;
+            Height = height;
         }
 
         public StaticPic(List<string> parts)
