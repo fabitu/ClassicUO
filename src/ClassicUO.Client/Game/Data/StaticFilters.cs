@@ -33,7 +33,6 @@
 using ClassicUO.Assets;
 using ClassicUO.Custom.Model;
 using ClassicUO.Utility;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;

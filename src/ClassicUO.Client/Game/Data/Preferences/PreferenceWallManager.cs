@@ -1,9 +1,9 @@
 ﻿using ClassicUO.Custom.Model;
 using ClassicUO.Utility.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using static ClassicUO.Game.Data.StaticFilters;
 
 namespace ClassicUO.Game.Data.PreferencesJson
@@ -12,6 +12,7 @@ namespace ClassicUO.Game.Data.PreferencesJson
     {
         private const string FILENAME = "wall.json";
         private static readonly string filePath = Path.Combine(DirectoryPath, FILENAME);
+
         public static void LoadWallFile()
         {
             if (!File.Exists(filePath))
@@ -22,7 +23,7 @@ namespace ClassicUO.Game.Data.PreferencesJson
             try
             {
                 var content = File.ReadAllText(filePath);
-                WallTiles = JsonConvert.DeserializeObject<List<CustomItens>>(content);
+                WallTiles = JsonSerializer.Deserialize<List<CustomItens>>(content);
                 Log.Trace($"File {filePath} load with sucess!");
             }
             catch (Exception ex)
@@ -43,7 +44,7 @@ namespace ClassicUO.Game.Data.PreferencesJson
                 ToReplaceGraphicArray = wallTiles
             });
 
-            var jsonString = JsonConvert.SerializeObject(replaceWall);
+            var jsonString = JsonSerializer.Serialize(replaceWall);
             File.WriteAllText(filePath, jsonString);
         }
 
@@ -59,7 +60,7 @@ namespace ClassicUO.Game.Data.PreferencesJson
                 ToReplaceGraphicArray = wallTiles
             });
 
-            var jsonString = JsonConvert.SerializeObject(replaceWall);
+            var jsonString = JsonSerializer.Serialize(replaceWall);
             File.WriteAllText(filePath, jsonString);
         }
 
@@ -68,13 +69,13 @@ namespace ClassicUO.Game.Data.PreferencesJson
             var content = File.ReadAllText(filePath);
             try
             {
-                var customItens = JsonConvert.DeserializeObject<List<CustomItens>>(content);               
+                var customItens = JsonSerializer.Deserialize<List<CustomItens>>(content);               
                        
                 foreach (var itemList in customItens)
                 {
                     itemList.ToReplaceGraphicArray.Remove(graphic);
                 }
-                content = JsonConvert.SerializeObject(customItens);
+                content = JsonSerializer.Serialize(customItens);
                 File.WriteAllText(filePath, content);
             }
             catch (Exception ex)

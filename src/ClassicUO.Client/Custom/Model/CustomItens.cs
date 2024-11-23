@@ -1,24 +1,19 @@
-﻿using ClassicUO.Game.GameObjects;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ClassicUO.Custom.Model
 {
     public class CustomItens
     {
-        [JsonProperty(Order = 0)]
+        [JsonPropertyOrder(0)]
         public string Type { get; set; }
-        [JsonProperty(Order = 1)]
+        [JsonPropertyOrder(1)]
         public string Description { get; set; }
-        [JsonProperty(Order = 2)]
+        [JsonPropertyOrder(2)]
         public string Flags { get; set; }
-        [JsonProperty(Order = 3)]
+        [JsonPropertyOrder(3)]
         public ushort ReplaceToGraphic { get; set; }
-        [JsonProperty(Order = 4)]
+        [JsonPropertyOrder(4)]
         public List<ushort> ToReplaceGraphicArray = [];
     }
 }
